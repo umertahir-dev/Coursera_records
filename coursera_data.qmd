@@ -1,0 +1,232 @@
+---
+author:"UMER TAHIR"
+title: "coursera_data"
+---
+
+## COURSERA RECORD
+
+This dataset is about the record of Coursera which is global online platform that offers anyone, anywhere access to online courses provided by different organization. It contains mainly 6 columns and 891 observations.
+
+1.  **Course_title :** Contains the course title.
+
+2.  **Course_organization** : It tells which organization is conducting the courses.
+
+3.  **Course_Certificate_type :** It has details about what are the different certifications available in courses.
+
+4.  **Course_rating :** It has the ratings associated with each course.
+
+5.  **Course_difficulty :** It tells about how difficult or what is the level of the course.
+
+6.  **Course_students_enrolled :** It has the number of students that are enrolled in the course.
+
+    ```{r}
+    install.packages("readr")
+    ```
+
+```{r}
+library(readr)
+Coursera_data<- read_csv("data/Coursera.csv")
+colnames(Coursera_data)
+
+
+```
+
+```{r}
+install.packages("tibble")
+```
+
+```{r}
+library(tibble)
+data<-as_tibble(Coursera_data)
+data
+```
+
+```{r}
+data<-data[-1]
+```
+
+```{r}
+library(tibble)
+glimpse(data)
+
+
+```
+```{r}
+library(ggplot2)
+#data$course_difficulty <- factor(data$course_difficulty, levels = c("Beginner", "Intermediate", "Advanced", "Mixed"))
+ggplot(data,aes(x=factor(course_difficulty,levels = unique(course_difficulty))))+
+  geom_bar(position="dodge",width=0.5,fill=c("lightblue", "yellow","pink","violet"))+
+  #scale_colour_manual(values = c("lightblue", "yellow","pink","violet"))+
+  
+  theme_minimal()
+  
+
+
+```
+
+**PLOT 1:**
+
+My first plot is about the course difficulty level in different type of certificates. We have three certificate type and four difficulty level of these certificates.
+
+```{r}
+library(ggplot2)
+data$course_difficulty <- factor(data$course_difficulty, levels = c("Beginner", "Intermediate", "Advanced", "Mixed"))
+ggplot(data, aes(x = course_difficulty, fill = course_Certificate_type)) +
+  geom_bar(position = "dodge") +
+  #geom_bar(aes(x = course_difficulty, fill = course_Certificate_type,position="dodge"))+
+  scale_fill_manual() +
+  labs(title = "Course Difficulty level by Certificate Type",
+       x="COURSE DIFFICULTY",
+       y="Total Number")+
+  scale_y_continuous(breaks = seq(0, 300, by = 30), limits = c(0, 300))
+
+
+
+```
+
+```         
+```
+```{r}
+library(ggplot2)
+
+# Get the top 10 course organizations
+top_10_organizations <- names(sort(table(data$course_organization), decreasing = TRUE))[10:1]
+
+# Reorder the levels of course_organization based on count
+data$course_organization <- factor(data$course_organization, levels = top_10_organizations)
+
+# Filter the data for the top 10 organizations
+data_top_10 <- data[data$course_organization %in% top_10_organizations, ]
+
+# Plotting
+ggplot(data_top_10, aes(y = course_organization)) +
+  geom_bar(fill="pink", width = 0.5) +
+  scale_fill_brewer(palette = "Set3") +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = 0.1) +
+  theme_minimal() +
+  labs(title = 'Top 10 Course Organizations', x = 'Number Of courses', y = 'Top Organizations') +
+  theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
+  scale_x_continuous(limits = c(0, 70), breaks = seq(0, 70, by = 10))
+
+```
+```{r}
+# Install and load the necessary library
+#install.packages("ggplot2")
+library(ggplot2)
+
+# Get the top 10 course organizations
+top_10_organizations <- head(names(sort(table(data$course_organization), decreasing = TRUE)), 10)
+
+# Filter the data for the top 10 organizations
+data_top_10 <- data[data$course_organization %in% top_10_organizations, ]
+
+# Plotting
+ggplot(data_top_10, aes(y = course_organization)) +
+  geom_bar(fill="pink",width=0.5) +
+  scale_fill_brewer(palette = "set3")+
+  geom_text(stat = 'count', aes(label = ..count..), vjust = 0.1
+            
+            
+            ) +
+  theme_minimal() +
+  labs(title = 'Top 10 Course Organizations', x = 'NUmber Of courses', y = 'Top Organizations') +
+  theme(axis.text.y = element_text(angle =360, hjust = 1))+
+  scale_x_continuous(limits = c(0, 70), breaks = seq(0, 70, by = 10))
+  
+  #scale_y_continuous(breaks = seq(0, 300, by = 50), limits = c(0, 300)))
+
+
+```
+
+```{r}
+library(ggplot2)
+
+# Plotting a histogram using ggplot2
+ggplot(data, aes(x = course_rating))+
+  geom_bar(fill="blue")+
+  theme_minimal() 
+  #theme(legend.position = "top") +
+  #scale_x_discrete(limits = as.character(seq(4, 5, by = 0.2)))
+
+
+              
+
+```
+
+PLOT 2:
+
+This plot shows the number of difficulty level corresponding to each Course ratting.
+
+```{r}
+ggplot(data, aes(x = as.factor(course_rating), fill = course_difficulty)) +
+  geom_bar(position = position_dodge2(preserve = "single")) +
+  labs(title = "Count Plot of Course Ratings by Difficulty Level",
+       x = "Course Rating",
+       y = "Count") +
+  theme_minimal() +
+  #theme(legend.position = "top") +
+  scale_x_discrete(limits = as.character(seq(4, 5, by = 0.1)))+
+  scale_y_continuous(breaks = seq(0, 45, by = 5), limits = c(0, 45))
+
+```
+```{r}
+max_students_index <- which.max(data$students_enrolled)
+
+# Get the record with the highest number of students enrolled
+record_highest_enrollment <- data[max_students_index, ]
+
+# Print the record
+print(record_highest_enrollment)
+library(ggplot2)
+
+# Sort the data by the number of students enrolled in descending order
+data_sorted <- data[order(-data$students_enrolled), ]
+
+# Select the top 10 courses
+top_10_courses <- head(data_sorted, 10)
+
+# Plotting
+ggplot(top_10_courses, aes(x = reorder(course_title, -students_enrolled), y = students_enrolled)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(title = 'Top 10 Courses with Highest Enrollments', x = 'Course Title', y = 'Number of Students Enrolled') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+# Sort the data by course rating in descending order
+data_sorted_by_rating <- data[order(-data$course_rating), ]
+
+# Select the top 10 courses
+top_10_courses_by_rating <- head(data_sorted_by_rating, 10)
+
+# Plotting
+ggplot(top_10_courses_by_rating, aes(x = reorder(course_title, -course_rating), y = course_rating)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(title = 'Top 10 Courses with Highest Ratings', x = 'Course Title', y = 'Course Rating') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```
+
+```{r}
+# Assuming df is your data frame
+
+# Install and load the necessary library
+
+library(ggplot2)
+
+# Plotting
+ggplot(data, aes(x = course_rating)) +
+  geom_point(stat = "count", aes(y = ..count..), position = position_jitter(width = 0.1)) +
+  labs(title = 'Number of Courses for Each Rating', x = 'Course Rating', y = 'Number of Courses') +
+  theme_minimal()
+
+
+```
+```{r}
+colnames(data)
+```
+
